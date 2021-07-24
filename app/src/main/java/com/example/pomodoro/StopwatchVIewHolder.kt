@@ -19,21 +19,25 @@ class StopwatchVIewHolder (
     ): RecyclerView.ViewHolder(binding.root) {
 
      private var timer: CountDownTimer? = null
-    //private var current = 0L
+    private var current = 0L
 
 
 
         fun bind(stopwatch: Stopwatch) {
             binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
+            binding.customViewOne.setPeriod(stopwatch.currentMs)
+            binding.customViewTwo.setPeriod(stopwatch.currentMs)
 
             if (stopwatch.isStarted) {
                 startTimer(stopwatch)
+                binding.customViewOne.setCurrent(stopwatch.currentMs)
             }else {
                 stopTimer(stopwatch)
+               // binding.customViewOne.setCurrent(stopwatch.currentMs)
             }
             initButtonsListeners(stopwatch)
 
-            //binding.customViewOne.setPeriod(PERIODCUSTOM)
+
            // binding.customViewTwo.setPeriod(PERIODCUSTOM)
 
 //            GlobalScope.launch {
@@ -68,13 +72,12 @@ class StopwatchVIewHolder (
         timer?.cancel()
         timer = getCountDownTimer(stopwatch)
         timer?.start()
-
+        binding.customViewOne.setPeriod(stopwatch.currentMs)
         binding.startPauseButton.text = "STOP"
 
-       // if (!(stopwatch.currentMs == 0L)) {
-          binding.blinkingIndicator.isInvisible = false
-          (binding.blinkingIndicator.background as? AnimationDrawable)?.start()
-       // } else
+        binding.blinkingIndicator.isInvisible = false
+        (binding.blinkingIndicator.background as? AnimationDrawable)?.start()
+
 
     }
 
@@ -85,8 +88,9 @@ class StopwatchVIewHolder (
 
         timer?.cancel()
         binding.startPauseButton.text = "START"
-
-        binding.blinkingIndicator.isInvisible = true
+        binding.customViewOne.setPeriod(stopwatch.currentMs)
+        binding.customViewOne.isInvisible = false
+        binding.blinkingIndicator.isInvisible = false
         (binding.blinkingIndicator.background as? AnimationDrawable)?.stop()
     }
 
@@ -96,10 +100,12 @@ class StopwatchVIewHolder (
 
             override fun onTick(millisUntilFinished: Long) {
                 stopwatch.currentMs = millisUntilFinished - interval
+                binding.customViewOne.setCurrent(stopwatch.currentMs)
                 binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
             }
 
             override fun onFinish() {
+                binding.customViewOne.setCurrent(current)
                 binding.stopwatchTimer.text = stopwatch.currentMs.displayTime()
                 stopTimer(stopwatch)
                 binding.itemId.setBackgroundColor(Color.parseColor("#FFBB86FC"))
@@ -116,7 +122,7 @@ class StopwatchVIewHolder (
             val s = this / 1000 % 60
             val ms = this % 1000 / 10
 
-            return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}:${displaySlot(ms)}"
+            return "${displaySlot(h)}:${displaySlot(m)}:${displaySlot(s)}" //:${displaySlot(ms)}"
         }
 
         private fun displaySlot(count: Long): String {
@@ -129,7 +135,7 @@ class StopwatchVIewHolder (
 
         private companion object {
 
-            private const val START_TIME = "00:00:00:00"
+            private const val START_TIME = "00:00:00"
             private const val UNIT_TEN_MS = 10L
             private const val PERIOD  = 1000L * 60L * 60L * 24L // Day
 
