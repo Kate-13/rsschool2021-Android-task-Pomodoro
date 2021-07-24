@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pomodoro.databinding.ActivityMainBinding
 
 
+
 class MainActivity : AppCompatActivity(), StopwatchListener {
 
     private lateinit var binding: ActivityMainBinding
@@ -28,13 +29,17 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
         }
 
         binding.addNewStopwatchButton.setOnClickListener {
+
             if(binding.setTimerMinutes.text.isBlank() || binding.setTimerMinutes.text.toString() == "0"){
                 Toast.makeText(applicationContext, "Value is empty", Toast.LENGTH_SHORT).show()
                 binding.setTimerMinutes.text.clear()
+            } else if(binding.setTimerMinutes.text.toString().toInt() <= 1440) {
+                       setminutes = binding.setTimerMinutes.text.toString().toLong() * 60L * 1000L
+                       stopwatches.add(Stopwatch(nextId++, setminutes, false))
+                       stopwatchAdapter.submitList(stopwatches.toList())
+                       binding.setTimerMinutes.text.clear()
             } else {
-                setminutes = binding.setTimerMinutes.text.toString().toLong() * 60L * 1000L
-                stopwatches.add(Stopwatch(nextId++, setminutes, false))
-                stopwatchAdapter.submitList(stopwatches.toList())
+                Toast.makeText(applicationContext, "Value > 24h", Toast.LENGTH_SHORT).show()
                 binding.setTimerMinutes.text.clear()
             }
         }
@@ -63,13 +68,17 @@ class MainActivity : AppCompatActivity(), StopwatchListener {
         stopwatches.forEach {
             if (it.id == id) {
                 newTimers.add(Stopwatch(it.id, currentMs ?: it.currentMs, isStarted))
+            } else if (it.isStarted == true) {
+                newTimers.add(Stopwatch(it.id, currentMs ?: it.currentMs, false))
             } else {
                 newTimers.add(it)
             }
         }
-        stopwatchAdapter.submitList(newTimers)
-        stopwatches.clear()
-        stopwatches.addAll(newTimers)
-    }
+
+            stopwatchAdapter.submitList(newTimers)
+            stopwatches.clear()
+            stopwatches.addAll(newTimers)
+        }
+
 
 }

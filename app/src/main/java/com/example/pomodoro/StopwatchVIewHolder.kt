@@ -18,7 +18,7 @@ class StopwatchVIewHolder (
     private val resources: Resources
     ): RecyclerView.ViewHolder(binding.root) {
 
-    private var timer: CountDownTimer? = null
+     private var timer: CountDownTimer? = null
     //private var current = 0L
 
 
